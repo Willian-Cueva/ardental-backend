@@ -13,13 +13,13 @@ const PersonalHistorySchema = new Schema({
   },
   bloodPressure: {
     type: Number,
-    required: true,
+    required: false,
     max: 3,
     min: 1
   },
   heartDiseases: {
     type: Boolean,
-    required: true,
+    required: false,
   },
   medication: {
     type: String,

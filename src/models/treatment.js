@@ -11,11 +11,11 @@ const TreatmentSchema = new Schema({
     {
         date: {
             type: String,
-            required: true,
+            required: false,
         },
         part:{
             type: String,
-            required: true,
+            required: false,
         },
         diagnostic: {
             type: String,

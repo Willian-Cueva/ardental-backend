@@ -11,12 +11,12 @@ const WayPaySchema = new Schema({
     {
         date: {
             type: String,
-            required: true,
+            required: false,
         },
         pass:{
             type: Number,
             min: 0,
-            required: true,
+            required: false,
         },
         balance: {
             type: Number,
