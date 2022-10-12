@@ -28,10 +28,6 @@ const PersonalHistorySchema = new Schema({
   otherDiseases: {
     type: String,
     required: false,
-  },
-  reasonConsult: {
-    type: String,
-    required: false,
   }
 });
 

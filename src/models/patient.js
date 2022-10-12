@@ -17,7 +17,7 @@ const PatientSchema = new Schema({
   },
   phone: {
     type: String,
-    required: true,
+    required: false,
   },
   direction: {
     type: String,
@@ -25,7 +25,7 @@ const PatientSchema = new Schema({
   },
   maritalStatus: {
     type: Number,
-    required: true,
+    required: false,
     max: 5,
     min: 1,
   },
@@ -33,11 +33,14 @@ const PatientSchema = new Schema({
     type: Number,
     max: 3,
     min: 1,
-    required: true,
+    required: false,
   },
   dateBorn: {
     type: String,
     required: true,
+  },
+  reason: {
+    type: String,
   },
 });
 
