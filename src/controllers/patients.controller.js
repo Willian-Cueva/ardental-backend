@@ -8,6 +8,163 @@ const TreatmentModel = require("../models/treatment");
 const WayPayModel = require("../models/wayPay");
 const { dniValidate } = require("../helpers/validations");
 
+patientsCtrl.putWayPayPatient = async (req, res) => {
+  console.log(req.body);
+  try {
+    const {
+      data,
+      _id,
+    } = req.body;
+    const waypay = await WayPayModel.findOne({ patient: _id });
+    waypay.data = data;
+   
+    await waypay.save();
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ocurrió un error en el backend al actualizar el la forma de pago del paciente",
+    });
+  }
+};
+
+patientsCtrl.getWayPayPatient = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const data = await WayPayModel.findOne({ patient: _id });
+    console.log(data, "data get");
+    return res.json({ status: "ok", data: data });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ha ocurrido un error al traer la información de las formas de pago del paciente",
+    });
+  }
+};
+
+patientsCtrl.putTreatmentsPatient = async (req, res) => {
+  console.log(req.body);
+  try {
+    const {
+      data,
+      _id,
+    } = req.body;
+    const treatments = await TreatmentModel.findOne({ patient: _id });
+    treatments.data = data;
+   
+    await treatments.save();
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ocurrió un error en el backend al actualizar el odontograma del paciente",
+    });
+  }
+};
+
+patientsCtrl.getTreatmentsPatient = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const data = await TreatmentModel.findOne({ patient: _id });
+    console.log(data, "data get");
+    return res.json({ status: "ok", data: data.data });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ha ocurrido un error al traer la información del plan y seguimiento de tratamiento del paciente",
+    });
+  }
+};
+
+patientsCtrl.putClinicalSignsPatient = async (req, res) => {
+  console.log(req.body);
+  try {
+    const {
+      lips,
+      cheeks,
+      floorMouth,
+      tongue,
+      saliva,
+      gums,
+      tonsils,
+      ATM,
+      nodes,
+      salivaryGlands,
+      _id,
+    } = req.body;
+    const clinicalSigns = await ClinicalSygnsModel.findOne({ patient: _id });
+    clinicalSigns.lips = lips;
+    clinicalSigns.cheeks = cheeks;
+    clinicalSigns.floorMouth = floorMouth;
+    clinicalSigns.tongue = tongue;
+    clinicalSigns.saliva = saliva;
+    clinicalSigns.gums = gums;
+    clinicalSigns.tonsils = tonsils;
+    clinicalSigns.ATM = ATM;
+    clinicalSigns.nodes = nodes;
+    clinicalSigns.salivaryGlands = salivaryGlands;
+    await clinicalSigns.save();
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ocurrió un error en el backend al actualizar el odontograma del paciente",
+    });
+  }
+};
+
+patientsCtrl.getClinicalSignsPatient = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const data = await ClinicalSygnsModel.findOne({ patient: _id });
+    console.log(data, "data get");
+    return res.json({ status: "ok", data });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ha ocurrido un error al traer la información de los signos clínicos del paciente",
+    });
+  }
+};
+
+patientsCtrl.putOdontogramPatient = async (req, res) => {
+  console.log(req.body);
+  try {
+    const { data, _id } = req.body;
+    const odontogram = await OdontogramModel.findOne({ patient: _id });
+    odontogram.data = data;
+    await odontogram.save();
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ocurrió un error en el backend al actualizar el odontograma del paciente",
+    });
+  }
+};
+
+patientsCtrl.getOdontogramPatient = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const data = await OdontogramModel.findOne({ patient: _id });
+    console.log(data, "data get");
+    return res.json({ status: "ok", data });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status:
+        "Ha ocurrido un error al traer la información del odontograma del paciente",
+    });
+  }
+};
+
 patientsCtrl.putOralSympPatient = async (req, res) => {
   console.log(req.body);
   try {
@@ -19,23 +176,23 @@ patientsCtrl.putOralSympPatient = async (req, res) => {
       hypersensitivity,
       _id,
     } = req.body;
-    const oralSymp = await OralSympModel.findOne({patient: _id})
-    oralSymp.halitosis =halitosis
-    oralSymp.BleedingGums =BleedingGums
-    oralSymp.xerostomia =xerostomia
-    oralSymp.bruxismo =bruxismo
-    oralSymp.hypersensitivity.acid =hypersensitivity.acid
-    oralSymp.hypersensitivity.cool =hypersensitivity.cool
-    oralSymp.hypersensitivity.hot =hypersensitivity.hot
-    oralSymp.hypersensitivity.sweet =hypersensitivity.sweet
-    oralSymp.hypersensitivity.touch =hypersensitivity.touch
-    await oralSymp.save()
+    const oralSymp = await OralSympModel.findOne({ patient: _id });
+    oralSymp.halitosis = halitosis;
+    oralSymp.BleedingGums = BleedingGums;
+    oralSymp.xerostomia = xerostomia;
+    oralSymp.bruxismo = bruxismo;
+    oralSymp.hypersensitivity.acid = hypersensitivity.acid;
+    oralSymp.hypersensitivity.cool = hypersensitivity.cool;
+    oralSymp.hypersensitivity.hot = hypersensitivity.hot;
+    oralSymp.hypersensitivity.sweet = hypersensitivity.sweet;
+    oralSymp.hypersensitivity.touch = hypersensitivity.touch;
+    await oralSymp.save();
     return res.json({ status: "ok" });
   } catch (error) {
     console.log(error);
     return res.json({
       status:
-        "Ocurrio un error en el backend al actualizar los antecedentes personales del paciente",
+        "Ocurrió un error en el backend al actualizar la sintomatología oral del paciente",
     });
   }
 };
@@ -44,13 +201,13 @@ patientsCtrl.getOralSympPatient = async (req, res) => {
   try {
     const { _id } = req.params;
     const data = await OralSympModel.findOne({ patient: _id });
-    console.log(data,"data get");
+    console.log(data, "data get");
     return res.json({ status: "ok", data });
   } catch (error) {
     console.log(error);
     return res.json({
       status:
-        "Ha ocurrido un error al traer la informacion de los antecedentes personales del paciente",
+        "Ha ocurrido un error al traer la información de la sintomatología oral del paciente",
     });
   }
 };
@@ -66,7 +223,9 @@ patientsCtrl.putPersonalHistoryPatient = async (req, res) => {
       otherDiseases,
       _id,
     } = req.body;
-    const personalhistory = await PersonalHistoryModel.findOne({patient:_id})
+    const personalhistory = await PersonalHistoryModel.findOne({
+      patient: _id,
+    });
     personalhistory.disorders = disorders;
     personalhistory.bloodPressure = bloodPressure;
     personalhistory.heartDiseases = heartDiseases;
@@ -78,7 +237,7 @@ patientsCtrl.putPersonalHistoryPatient = async (req, res) => {
     console.log(error);
     return res.json({
       status:
-        "Ocurrio un error en el backend al actualizar los antecedentes personales del paciente",
+        "Ocurrió un error en el backend al actualizar los antecedentes personales del paciente",
     });
   }
 };
@@ -93,7 +252,7 @@ patientsCtrl.getPersonalHistoryPatient = async (req, res) => {
     console.log(error);
     return res.json({
       status:
-        "Ha ocurrido un error al traer la informacion de los antecedentes personales del paciente",
+        "Ha ocurrido un error al traer la información de los antecedentes personales del paciente",
     });
   }
 };
@@ -116,17 +275,17 @@ patientsCtrl.putUpdatePatient = async (req, res) => {
     patient.profession = profession;
     patient.phone = phone;
     patient.direction = direction;
-    patient.maritalStatus =maritalStatus;
+    patient.maritalStatus = maritalStatus;
     patient.sex = sex;
     patient.dateBorn = dateBorn;
-    patient.reason =reason;
+    patient.reason = reason;
     await patient.save();
     return res.json({ status: "ok" });
   } catch (error) {
     console.log(error);
     return res.json({
       status:
-        "Ocurrio un error en el backend al actualizar los datos personales del paciente",
+        "Ocurrió un error en el backend al actualizar los datos personales del paciente",
     });
   }
 };

@@ -26,16 +26,6 @@ const ClinicalSignsSchema = new Schema({
       required: false,
     },
   },
-  cheeks: {
-    clinicalSigns: {
-      type: String,
-      required: false,
-    },
-    observations: {
-      type: String,
-      required: false,
-    },
-  },
   floorMouth: {
     clinicalSigns: {
       type: String,
