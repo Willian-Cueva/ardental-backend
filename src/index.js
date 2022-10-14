@@ -26,6 +26,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 //Routes 
 app.use("/api/patients", require("./routes/patients.routes"));
+app.use("/api/users", require("./routes/users.routes"));
 //Static files
 // app.use(express.static(path.join(__dirname, "client/build")));
 
