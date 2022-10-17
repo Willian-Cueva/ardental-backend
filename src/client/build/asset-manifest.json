@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/ardental/static/css/main.b9aa4cb6.css",
+    "main.js": "/ardental/static/js/main.d6fec7fd.js",
+    "static/js/787.c9440568.chunk.js": "/ardental/static/js/787.c9440568.chunk.js",
+    "static/media/logo.png": "/ardental/static/media/logo.0b1511fad0f17a411bf4.png",
+    "static/media/user.png": "/ardental/static/media/user.9eab2a9285569961c8d9.png",
+    "static/media/loading.png": "/ardental/static/media/loading.7708a9b97eda1105a4bb.png",
+    "index.html": "/ardental/index.html",
+    "main.b9aa4cb6.css.map": "/ardental/static/css/main.b9aa4cb6.css.map",
+    "main.d6fec7fd.js.map": "/ardental/static/js/main.d6fec7fd.js.map",
+    "787.c9440568.chunk.js.map": "/ardental/static/js/787.c9440568.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.b9aa4cb6.css",
+    "static/js/main.d6fec7fd.js"
+  ]
+}
