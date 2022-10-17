@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 
-const URI = "mongodb://localhost:27017/ardental-back";
-// const URI =
-//   "mongodb+srv://flormariadb:flor190522Passp@cluster0.qjqtf.mongodb.net/flor-maria-spa?retryWrites=true&w=majority";
-// const URI =
-//   "mongodb+srv://flormariadb:flor190522Passp@cluster0.fbbdh.mongodb.net/flor-maria-spa?retryWrites=true&w=majority";
+// const URI = "mongodb://localhost:27017/ardental-back";
+
+const URI = "mongodb+srv://ardental:P2qffF2MnavSrZCb@cluster0.qjqtf.mongodb.net/ardental-back?retryWrites=true&w=majority";
+
+// P2qffF2MnavSrZCb
 
 mongoose
   .connect(URI)
