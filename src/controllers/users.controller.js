@@ -214,13 +214,11 @@ userCtrl.login = async (req, res) => {
       };
 
       jwt.sign({ user }, "secretkey", { expiresIn: "1d" }, (err, token) => {
-        console.log(err);
         if (err !== null) {
           return res.json({
             status: "Hubo un error al asignar el token",
           });
         } else {
-          console.log("q");
           user = { ...user, token };
           return res.json({ status: "ok", data: user });
         }

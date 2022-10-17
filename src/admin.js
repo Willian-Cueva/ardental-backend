@@ -1,31 +1,33 @@
-const User = require("./models/users");
+const AccountModel = require("./models/account");
+const UserModel = require("./models/user")
 const jwt = require("jsonwebtoken");
 
-async function adminAccess(req, res, next) {
+function adminAccess(req, res, next) {
   try {
-    jwt.verify(req.token, "secretkey", (err, data) => {
+    jwt.verify(req.token, "secretkey",async (err, data) => {
       if (err) {
         res.sendStatus(403);
       } else {
-        const { email, rol } = data.user;
-        // const user = await User.findOne({email});
-        User.findOne({ email }, function (err, user) {
+        const { email } = data.user;
+        const account = await AccountModel.findOne({email});
+        UserModel.findById(account.user, function (err, user) {
           if (!err) {
-            if (user.rol === rol && rol === "admin") {
+            const {rol} = user;
+            if (rol === "super-administrer") {
               next();
             } else {
               // res.json({ status: "Rol no válido" });
-              res.sendStatus(403);
+              return res.json({status: "El usuario no tiene los permisos para realizar esta acción"})
             }
           } else {
-            res.json({ status: "No existe tal ususario" });
+            return res.json({ status: "No existe tal ususario" });
           }
         });
       }
     });
   } catch (error) {
     console.log(error);
-    res.json({ status: "hubo un error" });
+    return res.json({ status: "hubo un error" });
   }
 }
 

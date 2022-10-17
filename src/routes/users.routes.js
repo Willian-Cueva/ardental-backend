@@ -1,19 +1,21 @@
 const express = require("express");
+const adminAccess = require("../admin");
 const { login, register, getAllUsers, tooglePermitions, resquePassword, changePassword, getUser, putUser, changePass } = require("../controllers/users.controller");
+const ensureToken = require("../token");
 const router = express.Router()
 
-router.put("/update-user",putUser);
-router.get("/get-user/:email",getUser);
+router.put("/update-user",ensureToken,putUser);
+router.get("/get-user/:email",ensureToken,getUser);
 
-router.put("/change-pass",changePass);
+router.put("/change-pass",ensureToken,changePass);
 
 router.put("/change-password",changePassword)
 
 router.post("/resque-password",resquePassword)
 
-router.post("/toggle-permition",tooglePermitions);
+router.post("/toggle-permition",ensureToken,adminAccess,tooglePermitions);
 
-router.get("/all-users",getAllUsers);
+router.get("/all-users",ensureToken,getAllUsers);
 
 router.post("/login",login);
 

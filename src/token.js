@@ -6,7 +6,7 @@ function ensureToken(req, res, next) {
       req.token = bearerToken;
       next();
     } else {
-      res.sendStatus(404);
+      return res.json({status: "Usuario sin permisos"})
     }
   } catch (error) {
     console.log(error);
