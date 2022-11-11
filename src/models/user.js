@@ -30,6 +30,11 @@ const UserSchema = new Schema({
   changePassword:{
     type: Boolean,
     default: false
+  },sex: {
+    type: Number,
+    max: 3,
+    min: 1,
+    required: false,
   }
 });
 

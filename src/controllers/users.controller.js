@@ -39,12 +39,14 @@ userCtrl.putUser = async (req, res) => {
       dni,
       dateBorn,
       phone,
+      sex
     } = req.body;
     const user = await UserModel.findOne({dni});
     user.name=name;
     user.lastname=lastname;
     user.dateBorn=dateBorn;
     user.phone = phone;
+    user.sex = sex;
 
 
    
@@ -212,6 +214,7 @@ userCtrl.login = async (req, res) => {
         fullname: `${userDB.name} ${userDB.lastname}`,
         rol: userDB.rol,
         email: accountDB.email,
+        sex: userDB.sex
       };
 
       jwt.sign({ user }, "secretkey", { expiresIn: "1d" }, (err, token) => {
@@ -243,6 +246,7 @@ userCtrl.register = async (req, res) => {
       phone,
       email,
       password,
+      sex,
       repeatPassword,
     } = req.body;
     console.log(
@@ -253,6 +257,7 @@ userCtrl.register = async (req, res) => {
       phone,
       email,
       password,
+      sex,
       repeatPassword
     );
     if (password !== repeatPassword)
@@ -277,6 +282,7 @@ userCtrl.register = async (req, res) => {
                           dni,
                           dateBorn,
                           phone,
+                          sex
                         });
                         let user_id = -1;
                         await user.save().then((pt) => {
