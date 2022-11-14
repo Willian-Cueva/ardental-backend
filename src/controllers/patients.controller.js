@@ -6,18 +6,76 @@ const OdontogramModel = require("../models/odontogram");
 const ClinicalSygnsModel = require("../models/clinicalSigns");
 const TreatmentModel = require("../models/treatment");
 const WayPayModel = require("../models/wayPay");
+const ImagenModel = require("../models/images");
 const { dniValidate } = require("../helpers/validations");
+
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "dm3gntcte",
+  api_key: "944791171699979",
+  api_secret: "4zaR7n-xm-FfKQ6LhvwpC7uHfuI",
+});
+
+patientsCtrl.deleteImage = async (req,res) =>{
+  try {
+    const {url} = req.body;
+    const image = await ImagenModel.findOne({url});
+    await image.delete();
+    return res.json({
+      status: "ok"
+    })
+    
+  } catch (error) {
+    console.log(error);
+    return res.json({status: "Ha ocurrido un error al eliminar la imagen del paciente"})
+  }
+}
+
+patientsCtrl.getImagesPatient = async (req,res)=>{
+  try {
+    const {dni} = req.params;
+    const patient = await PatientModel.findOne({dni});
+    if (patient) {
+      const images = await ImagenModel.find({user: patient._id}).lean()
+      return res.json({status: "ok",data: images});
+    } else {
+      return res.json({ status: "No se pudo encontrar el paciente para subir las imágenes" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.json({status: "Ha ocurrido un error al traer las imagenes del paciente"})
+  }
+}
+
+patientsCtrl.uploadImage = async (req, res) => {
+  try {
+    console.log("body musica chola");
+    const { dni } = req.body;
+    const patient = await PatientModel.findOne({ dni });
+    if (patient) {
+      const imageUploadeada = await cloudinary.uploader.upload(req.file.path);
+      const imagen = new ImagenModel({user: String(patient._id),url: imageUploadeada.url})
+      await imagen.save()
+      return res.json({ status: "ok" });
+    } else {
+      return res.json({ status: "No se pudo encontrar el paciente para subir las imágenes" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "Ocurrio un problema al subir la imagen",
+    });
+  }
+};
 
 patientsCtrl.putWayPayPatient = async (req, res) => {
   console.log(req.body);
   try {
-    const {
-      data,
-      _id,
-    } = req.body;
+    const { data, _id } = req.body;
     const waypay = await WayPayModel.findOne({ patient: _id });
     waypay.data = data;
-   
+
     await waypay.save();
     return res.json({ status: "ok" });
   } catch (error) {
@@ -47,13 +105,10 @@ patientsCtrl.getWayPayPatient = async (req, res) => {
 patientsCtrl.putTreatmentsPatient = async (req, res) => {
   console.log(req.body);
   try {
-    const {
-      data,
-      _id,
-    } = req.body;
+    const { data, _id } = req.body;
     const treatments = await TreatmentModel.findOne({ patient: _id });
     treatments.data = data;
-   
+
     await treatments.save();
     return res.json({ status: "ok" });
   } catch (error) {
