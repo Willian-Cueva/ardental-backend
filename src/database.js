@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
-const URI = "mongodb://127.0.0.1:27017/ardental-back";
-// const URI = "mongodb+srv://ardental:AY1J8P3OKQ3pjGdm@cluster0.p1swo.mongodb.net/ardental-back?retryWrites=true&w=majority";
+// const URI = "mongodb://127.0.0.1:27017/ardental-back";
+const URI = "mongodb+srv://ardental:AY1J8P3OKQ3pjGdm@cluster0.p1swo.mongodb.net/ardental-back?retryWrites=true&w=majority";
 
 // AY1J8P3OKQ3pjGdm
 
