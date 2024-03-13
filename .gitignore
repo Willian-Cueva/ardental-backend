@@ -1,3 +1,4 @@
 node_modules
 .vscode
 tareas.txt
+src/client/*
