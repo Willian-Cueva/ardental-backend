@@ -24,15 +24,11 @@ const PatientSchema = new Schema({
     required: true,
   },
   maritalStatus: {
-    type: Number,
+    type: String,
     required: false,
-    max: 5,
-    min: 1,
   },
   sex: {
-    type: Number,
-    max: 3,
-    min: 1,
+    type: String,
     required: false,
   },
   dateBorn: {
@@ -41,6 +37,11 @@ const PatientSchema = new Schema({
   },
   reason: {
     type: String,
+  },
+  version: {
+    type: Number,
+    required: false,
+    default: 2,
   },
 });
 

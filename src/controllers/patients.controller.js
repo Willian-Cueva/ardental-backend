@@ -7,6 +7,8 @@ const ClinicalSygnsModel = require("../models/clinicalSigns");
 const TreatmentModel = require("../models/treatment");
 const WayPayModel = require("../models/wayPay");
 const ImagenModel = require("../models/images");
+const TreatmentAndPayModel = require("../models/treatmentAndPay");
+const MedicalAppointmentModel = require("../models/medicalAppointment");
 const { dniValidate } = require("../helpers/validations");
 
 const cloudinary = require("cloudinary").v2;
@@ -17,49 +19,342 @@ cloudinary.config({
   api_secret: "4zaR7n-xm-FfKQ6LhvwpC7uHfuI",
 });
 
-patientsCtrl.deleteImage = async (req,res) =>{
+patientsCtrl.getMedicalAppointmentState = async (req, res) => {
   try {
-    const {url} = req.body;
-    const image = await ImagenModel.findOne({url});
-    await image.delete();
-    return res.json({
-      status: "ok"
-    })
-    
+    const { state } = req.params;
+    let search = "";
+    switch (state) {
+      case "pendings":
+        search = "PENDIENTE";
+        break;
+      case "unpresented":
+        search = "NO SE PRESENTO";
+        break;
+      case "presented":
+        search = "SE PRESENTO";
+        break;
+      default:
+        search = "";
+        break;
+    }
+    console.log("Buscando: ", search);
+    const medicalAppointment = await MedicalAppointmentModel.find({
+      state: search,
+    });
+    return res.json({ status: "ok", data: medicalAppointment });
   } catch (error) {
     console.log(error);
-    return res.json({status: "Ha ocurrido un error al eliminar la imagen del paciente"})
+    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
   }
-}
+};
 
-patientsCtrl.getImagesPatient = async (req,res)=>{
+patientsCtrl.putMedicalAppointment = async (req, res) => {
   try {
-    const {dni} = req.params;
-    const patient = await PatientModel.findOne({dni});
+    const { updateMedicalAppointment } = req.body;
+    const _id = updateMedicalAppointment._id;
+    const medicalAppointment = await MedicalAppointmentModel.findById(_id);
+    medicalAppointment.namesPatient = updateMedicalAppointment.namesPatient;
+    medicalAppointment.dniPatient = updateMedicalAppointment.dniPatient;
+    medicalAppointment.date.year = updateMedicalAppointment.date.year;
+    medicalAppointment.date.month = updateMedicalAppointment.date.month;
+    medicalAppointment.date.day = updateMedicalAppointment.date.day;
+    medicalAppointment.timeStart = updateMedicalAppointment.timeStart;
+    medicalAppointment.observations = updateMedicalAppointment.observations;
+    await medicalAppointment.save();
+    return res.json({ status: "ok", data: medicalAppointment });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+  }
+};
+
+patientsCtrl.patchMedicalAppointmentState = async (req, res) => {
+  try {
+    const { _id, state } = req.body;
+    const medicalAppointment = await MedicalAppointmentModel.findById(_id);
+    medicalAppointment.state = state;
+    await medicalAppointment.save();
+    console.log(medicalAppointment);
+    return res.json({ status: "ok", data: medicalAppointment });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+  }
+};
+
+patientsCtrl.getMedicalAppointmentPerYearMonthAndDay = async (req, res) => {
+  try {
+    const { year, month, day } = req.params;
+
+    const medicalAppointments = await MedicalAppointmentModel.find({
+      $and: [
+        { "date.year": year }, // Ajusta el año según el que desees buscar
+        { "date.month": month }, // Ajusta el mes según el que desees buscar (agrega un cero si es necesario)
+        { "date.day": day }, // Ajusta el día según el que desees buscar (agrega un cero si es necesario)
+      ],
+    }).sort({ timeStart: 1 });
+    console.log(medicalAppointments);
+    return res.json({ status: "ok", data: medicalAppointments });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+  }
+};
+
+patientsCtrl.getMedicalAppointmentPerYearAndMonth = async (req, res) => {
+  try {
+    const { year, month } = req.params;
+    console.log(year, month);
+    const listDaysMonth = [];
+    const daysMonth = new Date(year, month * 1 + 1, 0).getDate();
+    console.log(daysMonth);
+
+    for (let i = 1; i <= daysMonth; i++) {
+      listDaysMonth.push({ day: i, appointments: 0 });
+    }
+
+    const medicalAppointments = await MedicalAppointmentModel.find({
+      $and: [
+        { "date.year": year }, // Ajusta el año según el que desees buscar
+        { "date.month": month },
+      ],
+    });
+
+    medicalAppointments.forEach((medicalAppointment) => {
+      listDaysMonth[medicalAppointment.date.day - 1].appointments++;
+    });
+
+    const firstDayMonth = new Date(year, month, 1).getDay();
+
+    const data = {
+      firstDayMonth,
+      listDaysMonth,
+    };
+
+    return res.json({ status: "ok", data });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+  }
+};
+
+patientsCtrl.updateVersion = async (req, res) => {
+  try {
+    const patients = await PatientModel.find();
+    patients.forEach(async (patient) => {
+      switch (patient.sex) {
+        case "1":
+          patient.sex = "Masculino";
+          break;
+        case "2":
+          patient.sex = "Femenino";
+          break;
+        case "3":
+          patient.sex = "Otro";
+          break;
+        default:
+          break;
+      }
+      switch (patient.maritalStatus) {
+        case "1":
+          patient.maritalStatus = "Soltero/a";
+          break;
+        case "2":
+          patient.maritalStatus = "Casado/a";
+          break;
+        case "3":
+          patient.maritalStatus = "Divorciado/a";
+          break;
+        case "4":
+          patient.maritalStatus = "Viudo/a";
+          break;
+        default:
+          break;
+      }
+      patient.version = 1;
+      await patient.save();
+    });
+
+    const personalhistories = await PersonalHistoryModel.find();
+    personalhistories.forEach(async (personalhistory) => {
+      switch (personalhistory.bloodPressure) {
+        case 1:
+          personalhistory.bloodPressure = "Alta";
+          break;
+        case 2:
+          personalhistory.bloodPressure = "Normal";
+          break;
+        case 3:
+          personalhistory.bloodPressure = "Baja";
+          break;
+        default:
+          break;
+      }
+      await personalhistory.save();
+    });
+
+    return res.json({ status: "ok", message: "version actualizada" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al actualizar la version" });
+  }
+};
+
+patientsCtrl.deleteMedicalAppointment = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    await MedicalAppointmentModel.findByIdAndDelete(_id);
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrió un error al eliminar la cita medica" });
+  }
+};
+
+patientsCtrl.getMedicalAppointments = async (req, res) => {
+  try {
+    const { dniPatient } = req.params;
+    const medicalAppointments = await MedicalAppointmentModel.find(dniPatient);
+    return res.json({ status: "ok", data: medicalAppointments });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+  }
+};
+
+patientsCtrl.postMedicalAppointment = async (req, res) => {
+  try {
+    const { medicalAppointment } = req.body;
+    const newMedicalAppointment = new MedicalAppointmentModel(
+      medicalAppointment
+    );
+    await newMedicalAppointment.save();
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: "Ocurrio un error al crear la cita medica" });
+  }
+};
+patientsCtrl.deleteTreatmentAndPay = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    await TreatmentAndPayModel.findByIdAndDelete(_id);
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "Ocurrio un error al eliminar el tratamiento y pago",
+    });
+  }
+};
+
+patientsCtrl.putTreatmentsAndPay = async (req, res) => {
+  try {
+    const { data } = req.body;
+    console.log("datos a actualizar");
+    console.log(data);
+    const TreatmentAndPay = await TreatmentAndPayModel.findOne({
+      _id: data._id,
+    });
+    console.log("tratamiento y pago encontrado");
+    console.log(TreatmentAndPay);
+    const { dateInit, dateEnd, treatment, values, followUp } = data;
+    TreatmentAndPay.dateInit = dateInit;
+    TreatmentAndPay.dateEnd = dateEnd;
+    TreatmentAndPay.treatment = treatment;
+    TreatmentAndPay.values = values;
+    TreatmentAndPay.followUp = followUp;
+    const save = await TreatmentAndPay.save();
+    console.log("Lo guardado dice que es");
+    console.log(save);
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "Ocurrio un error al actualizar el tratamiento y pago",
+    });
+  }
+};
+
+patientsCtrl.getTreatmentAndPay = async (req, res) => {
+  try {
+    const { dniPatient } = req.params;
+    const treatmentAndPay = await TreatmentAndPayModel.find({ dniPatient });
+    return res.json({ status: "ok", data: treatmentAndPay });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "Ocurrio un error al obtener los tratamientos y pagos",
+    });
+  }
+};
+
+patientsCtrl.postTreatmentAndPay = async (req, res) => {
+  try {
+    const { treatmentAndPay } = req.body;
+    const TreatmentAndPay = new TreatmentAndPayModel(treatmentAndPay);
+    await TreatmentAndPay.save();
+    return res.json({ status: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "Ocurrio un error al crear el tratamiento y pago",
+    });
+  }
+};
+
+patientsCtrl.deleteImage = async (req, res) => {
+  try {
+    const { url } = req.body;
+    const image = await ImagenModel.findOne({ url });
+    await image.delete();
+    return res.json({
+      status: "ok",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      status: "Ha ocurrido un error al eliminar la imagen del paciente",
+    });
+  }
+};
+
+patientsCtrl.getImagesPatient = async (req, res) => {
+  try {
+    const { dni } = req.params;
+    const patient = await PatientModel.findOne({ dni });
     if (patient) {
-      const images = await ImagenModel.find({user: patient._id}).lean()
-      return res.json({status: "ok",data: images});
+      const images = await ImagenModel.find({ user: patient._id }).lean();
+      return res.json({ status: "ok", data: images });
     } else {
-      return res.json({ status: "No se pudo encontrar el paciente para subir las imágenes" });
+      return res.json({
+        status: "No se pudo encontrar el paciente para subir las imágenes",
+      });
     }
   } catch (error) {
     console.log(error);
-    return res.json({status: "Ha ocurrido un error al traer las imagenes del paciente"})
+    return res.json({
+      status: "Ha ocurrido un error al traer las imagenes del paciente",
+    });
   }
-}
+};
 
 patientsCtrl.uploadImage = async (req, res) => {
   try {
-    console.log("body musica chola");
     const { dni } = req.body;
     const patient = await PatientModel.findOne({ dni });
     if (patient) {
       const imageUploadeada = await cloudinary.uploader.upload(req.file.path);
-      const imagen = new ImagenModel({user: String(patient._id),url: imageUploadeada.url})
-      await imagen.save()
+      const imagen = new ImagenModel({
+        user: String(patient._id),
+        url: imageUploadeada.url,
+      });
+      await imagen.save();
       return res.json({ status: "ok" });
     } else {
-      return res.json({ status: "No se pudo encontrar el paciente para subir las imágenes" });
+      return res.json({
+        status: "No se pudo encontrar el paciente para subir las imágenes",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -70,7 +365,6 @@ patientsCtrl.uploadImage = async (req, res) => {
 };
 
 patientsCtrl.putWayPayPatient = async (req, res) => {
-  console.log(req.body);
   try {
     const { data, _id } = req.body;
     const waypay = await WayPayModel.findOne({ patient: _id });
@@ -91,7 +385,6 @@ patientsCtrl.getWayPayPatient = async (req, res) => {
   try {
     const { _id } = req.params;
     const data = await WayPayModel.findOne({ patient: _id });
-    console.log(data, "data get");
     return res.json({ status: "ok", data: data });
   } catch (error) {
     console.log(error);
@@ -103,7 +396,6 @@ patientsCtrl.getWayPayPatient = async (req, res) => {
 };
 
 patientsCtrl.putTreatmentsPatient = async (req, res) => {
-  console.log(req.body);
   try {
     const { data, _id } = req.body;
     const treatments = await TreatmentModel.findOne({ patient: _id });
@@ -124,7 +416,6 @@ patientsCtrl.getTreatmentsPatient = async (req, res) => {
   try {
     const { _id } = req.params;
     const data = await TreatmentModel.findOne({ patient: _id });
-    console.log(data, "data get");
     return res.json({ status: "ok", data: data.data });
   } catch (error) {
     console.log(error);
@@ -136,7 +427,6 @@ patientsCtrl.getTreatmentsPatient = async (req, res) => {
 };
 
 patientsCtrl.putClinicalSignsPatient = async (req, res) => {
-  console.log(req.body);
   try {
     const {
       lips,
@@ -177,7 +467,6 @@ patientsCtrl.getClinicalSignsPatient = async (req, res) => {
   try {
     const { _id } = req.params;
     const data = await ClinicalSygnsModel.findOne({ patient: _id });
-    console.log(data, "data get");
     return res.json({ status: "ok", data });
   } catch (error) {
     console.log(error);
@@ -189,7 +478,6 @@ patientsCtrl.getClinicalSignsPatient = async (req, res) => {
 };
 
 patientsCtrl.putOdontogramPatient = async (req, res) => {
-  console.log(req.body);
   try {
     const { data, _id } = req.body;
     const odontogram = await OdontogramModel.findOne({ patient: _id });
@@ -209,7 +497,6 @@ patientsCtrl.getOdontogramPatient = async (req, res) => {
   try {
     const { _id } = req.params;
     const data = await OdontogramModel.findOne({ patient: _id });
-    console.log(data, "data get");
     return res.json({ status: "ok", data });
   } catch (error) {
     console.log(error);
@@ -221,7 +508,6 @@ patientsCtrl.getOdontogramPatient = async (req, res) => {
 };
 
 patientsCtrl.putOralSympPatient = async (req, res) => {
-  console.log(req.body);
   try {
     const {
       halitosis,
@@ -256,7 +542,6 @@ patientsCtrl.getOralSympPatient = async (req, res) => {
   try {
     const { _id } = req.params;
     const data = await OralSympModel.findOne({ patient: _id });
-    console.log(data, "data get");
     return res.json({ status: "ok", data });
   } catch (error) {
     console.log(error);
@@ -268,7 +553,6 @@ patientsCtrl.getOralSympPatient = async (req, res) => {
 };
 
 patientsCtrl.putPersonalHistoryPatient = async (req, res) => {
-  console.log(req.body);
   try {
     const {
       disorders,
@@ -366,7 +650,6 @@ patientsCtrl.getAllPatients = async (req, res) => {
 };
 
 patientsCtrl.postnewPatient = async (req, res) => {
-  console.log("Hasta aki estamos bien");
   try {
     const {
       PersonaData,

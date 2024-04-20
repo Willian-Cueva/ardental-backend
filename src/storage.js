@@ -4,14 +4,11 @@ const storage = multer.diskStorage({
     cb(null, "./src/client/build/storage/imgs");
   },
   filename: function (req, file, cb) {
-    // console.log(file, req, req.body);
     try {
-      console.log("hola si entramos aki xd");
       const day = new Date();
       let name = `${day.getDate()}-${day.getMonth()}-${
         file.originalname
       }`.replaceAll(" ", "%");
-      console.log("file name ->",file.name);
       req.body.nameImage = file.name;
       cb(null, name);
     } catch (error) {

@@ -66,7 +66,6 @@ userCtrl.getUser = async (req, res) => {
     const { email } = req.params;
     const account = await AccountModel.findOne({ email });
     const user = await UserModel.findById(account.user);
-    console.log(user);
     return res.json({ status: "ok", data: user,account });
   } catch (error) {
     console.log(error);
@@ -113,7 +112,7 @@ userCtrl.resquePassword = async (req, res) => {
     const account = await AccountModel.findOne({ email });
     if (!account)
       return res.json({
-        status: "Este correo no está resgistrado en el sistema",
+        status: "Credenciales no válidas",
       });
     const user = await UserModel.findById(account.user);
     if (user) {

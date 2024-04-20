@@ -12,10 +12,8 @@ const PersonalHistorySchema = new Schema({
     required: false,
   },
   bloodPressure: {
-    type: Number,
+    type: String,
     required: false,
-    max: 3,
-    min: 1
   },
   heartDiseases: {
     type: Boolean,
