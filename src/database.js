@@ -3,12 +3,17 @@ const mongoose = require("mongoose");
 // const URI = "mongodb://127.0.0.1:27017/ardental-back";
 // const URI = "mongodb+srv://ardental:AY1J8P3OKQ3pjGdm@cluster0.p1swo.mongodb.net/ardental-back?retryWrites=true&w=majority";
 // const URI = "mongodb+srv://<username>:<npm password>@cluster0.egosslt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-const URI = "mongodb+srv://enriquewillian2:E7KSyUeC66tjLZ7i@cluster0.egosslt.mongodb.net/";
+const URI =
+  "mongodb+srv://enriquewillian2:E7KSyUeC66tjLZ7i@cluster0.egosslt.mongodb.net/";
 
 // AY1J8P3OKQ3pjGdm
+mongoose.set("strictQuery", true);
 
 mongoose
-  .connect(URI)
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then((db) => console.log("La base de datos está conectada" + db))
   .catch((error) => console.log("No se pudo conectar la base de datos", error));
 
