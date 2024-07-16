@@ -23,17 +23,16 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  rol:{
+  rol: {
     type: String,
-    default: "not-authorized"
+    default: "not-authorized",
   },
-  changePassword:{
+  changePassword: {
     type: Boolean,
-    default: false
-  },sex: {
-    type: Number,
-    max: 3,
-    min: 1,
+    default: false,
+  },
+  sex: {
+    type: String,
     required: false,
   }
 });

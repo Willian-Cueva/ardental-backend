@@ -10,6 +10,7 @@ const ImagenModel = require("../models/images");
 const TreatmentAndPayModel = require("../models/treatmentAndPay");
 const MedicalAppointmentModel = require("../models/medicalAppointment");
 const { dniValidate } = require("../helpers/validations");
+const UserModel = require("../models/user");
 
 const cloudinary = require("cloudinary").v2;
 
@@ -64,7 +65,7 @@ patientsCtrl.putMedicalAppointment = async (req, res) => {
     return res.json({ status: "ok", data: medicalAppointment });
   } catch (error) {
     console.log(error);
-    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+    return res.json({ status: "Ocurrio un error al actualizar la cita médica" });
   }
 };
 
@@ -78,7 +79,7 @@ patientsCtrl.patchMedicalAppointmentState = async (req, res) => {
     return res.json({ status: "ok", data: medicalAppointment });
   } catch (error) {
     console.log(error);
-    return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+    return res.json({ status: "Ocurrio un error cambiar el estado de la cita" });
   }
 };
 
@@ -89,8 +90,8 @@ patientsCtrl.getMedicalAppointmentPerYearMonthAndDay = async (req, res) => {
     const medicalAppointments = await MedicalAppointmentModel.find({
       $and: [
         { "date.year": year }, // Ajusta el año según el que desees buscar
-        { "date.month": month }, // Ajusta el mes según el que desees buscar (agrega un cero si es necesario)
-        { "date.day": day }, // Ajusta el día según el que desees buscar (agrega un cero si es necesario)
+        { "date.month": month * 1 }, // Ajusta el mes según el que desees buscar (agrega un cero si es necesario)
+        { "date.day": day * 1 < 10 ? `0${day}` : day }, // Ajusta el día según el que desees buscar (agrega un cero si es necesario)
       ],
     }).sort({ timeStart: 1 });
     console.log(medicalAppointments);
@@ -106,7 +107,7 @@ patientsCtrl.getMedicalAppointmentPerYearAndMonth = async (req, res) => {
     const { year, month } = req.params;
     console.log(year, month);
     const listDaysMonth = [];
-    const daysMonth = new Date(year, month * 1 + 1, 0).getDate();
+    const daysMonth = new Date(year * 1, month * 1 + 1, 0).getDate();
     console.log(daysMonth);
 
     for (let i = 1; i <= daysMonth; i++) {
@@ -140,6 +141,24 @@ patientsCtrl.getMedicalAppointmentPerYearAndMonth = async (req, res) => {
 
 patientsCtrl.updateVersion = async (req, res) => {
   try {
+    const users = await UserModel.find();
+    users.forEach(async (user) => {
+      switch (user.sex) {
+        case "1":
+          user.sex = "Masculino";
+          break;
+        case "2":
+          user.sex = "Femenino";
+          break;
+        case "3":
+          user.sex = "Otro";
+          break;
+        default:
+          break;
+      }
+      await user.save();
+    });
+
     const patients = await PatientModel.find();
     patients.forEach(async (patient) => {
       switch (patient.sex) {

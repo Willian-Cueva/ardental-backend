@@ -47,6 +47,7 @@ router.get(
   "/medical-appointment/:year/:month/:day",
   getMedicalAppointmentPerYearMonthAndDay
 );
+
 router.post("/medical-appointment", postMedicalAppointment);
 router.patch("/medical-appointment/", patchMedicalAppointmentState);
 router.put("/medical-appointment/", putMedicalAppointment);

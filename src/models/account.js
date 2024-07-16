@@ -2,12 +2,11 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { Schema } = mongoose;
 
-const AcountSchema = new Schema({
-    user: 
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
+const AccountSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
   email: {
     type: String,
     unique: true,
@@ -19,13 +18,19 @@ const AcountSchema = new Schema({
   },
 });
 
-AcountSchema.pre('save',function (next) {
-    bcrypt.genSalt(10).then((salts)=>{
-        bcrypt.hash(this.password,salts).then((hash)=>{
-            this.password = hash;
-            next();
-        }).catch(err=>console.log(err))
-    }).catch(err=>console.log(err))
-})
+AccountSchema.pre("save", function (next) {
+  bcrypt
+    .genSalt(10)
+    .then((salts) => {
+      bcrypt
+        .hash(this.password, salts)
+        .then((hash) => {
+          this.password = hash;
+          next();
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+});
 
-module.exports = mongoose.model("Acount", AcountSchema);
+module.exports = mongoose.model("Account", AccountSchema);
