@@ -207,6 +207,7 @@ userCtrl.login = async (req, res) => {
     const accountDB = await AccountModel.findOne({ email });
     if(!accountDB)return res.json({status: "Usuario no registrado"})
     const permit = await bcrypt.compare(password, accountDB.password);
+    console.log(permit);
     if (permit) {
       const userDB = await UserModel.findById(accountDB.user).exec();
       let user = {
