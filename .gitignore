@@ -5,3 +5,5 @@ src/client/*
 test_prueba*
 escenario_*
 pruebas*
+
+*.env
