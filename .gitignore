@@ -7,3 +7,4 @@ escenario_*
 pruebas*
 
 *.env
+.vercel
