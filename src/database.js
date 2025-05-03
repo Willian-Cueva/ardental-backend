@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const URI = process.env.MONGO_URI || "mongodb://localhost/clinica";
+const URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/ardental-back";
 
 console.log(URI);
 
