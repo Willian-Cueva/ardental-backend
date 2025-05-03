@@ -31,6 +31,7 @@ const {
   putMedicalAppointment,
   deleteMedicalAppointment,
   getMedicalAppointmentState,
+  getMedicalAppointmentsPerYearAndMonthWithFirstDayMonth,
 } = require("../controllers/patients.controller");
 // const ensureToken = require("../token");
 const upload = require("../storage");
@@ -39,6 +40,10 @@ const router = express.Router();
 router.put("/update-version", updateVersion);
 
 router.get("/medical-appointment/:state", getMedicalAppointmentState);
+router.get(
+  "/medical-appointment/with-first-day-month/:year/:month",
+  getMedicalAppointmentsPerYearAndMonthWithFirstDayMonth
+);
 router.get(
   "/medical-appointment/:year/:month",
   getMedicalAppointmentPerYearAndMonth

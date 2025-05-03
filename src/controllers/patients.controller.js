@@ -65,7 +65,9 @@ patientsCtrl.putMedicalAppointment = async (req, res) => {
     return res.json({ status: "ok", data: medicalAppointment });
   } catch (error) {
     console.log(error);
-    return res.json({ status: "Ocurrio un error al actualizar la cita médica" });
+    return res.json({
+      status: "Ocurrio un error al actualizar la cita médica",
+    });
   }
 };
 
@@ -79,7 +81,9 @@ patientsCtrl.patchMedicalAppointmentState = async (req, res) => {
     return res.json({ status: "ok", data: medicalAppointment });
   } catch (error) {
     console.log(error);
-    return res.json({ status: "Ocurrio un error cambiar el estado de la cita" });
+    return res.json({
+      status: "Ocurrio un error cambiar el estado de la cita",
+    });
   }
 };
 
@@ -102,7 +106,10 @@ patientsCtrl.getMedicalAppointmentPerYearMonthAndDay = async (req, res) => {
   }
 };
 
-patientsCtrl.getMedicalAppointmentPerYearAndMonth = async (req, res) => {
+patientsCtrl.getMedicalAppointmentsPerYearAndMonthWithFirstDayMonth = async (
+  req,
+  res
+) => {
   try {
     const { year, month } = req.params;
     console.log(year, month);
@@ -136,6 +143,29 @@ patientsCtrl.getMedicalAppointmentPerYearAndMonth = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.json({ status: "Ocurrio un error al traer las citas medicas" });
+  }
+};
+
+patientsCtrl.getMedicalAppointmentPerYearAndMonth = async (req, res) => {
+  try {
+    const { year, month } = req.params;
+    console.log(year, month);
+    const daysMonth = new Date(year * 1, month * 1 + 1).getDate();
+    console.log(daysMonth);
+
+    const medicalAppointments = await MedicalAppointmentModel.find({
+      $and: [
+        { "date.year": year }, // Ajusta el año según el que desees buscar
+        { "date.month": month*1 },
+      ],
+    });
+
+    const data = medicalAppointments;
+
+    return res.json({ message: "ok", data });
+  } catch (error) {
+    console.log(error);
+    return res.json({ message: "Ocurrio un error al traer las citas medicas" });
   }
 };
 
